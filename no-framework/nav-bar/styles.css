@@ -1,0 +1,66 @@
+body {
+    background-color: rgb(204, 247, 204);
+    margin: 0;
+}
+
+nav {
+    left: 0;
+    width: 100%;
+    background-color: rgb(30, 156, 30);
+    display:flex;
+}
+
+.link h2 {
+    font-size: 18px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 60px;
+    margin:0;
+    font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+}
+
+.link {
+    padding-left: 0px;
+    margin: 0;
+    position: flex-start;
+}
+.edit {
+    font-weight:lighter;
+}
+
+.view {
+ width: 30px;
+}
+
+.list {
+    width: 100px;
+    display: none;
+    list-style-type: none;
+    text-decoration: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-family:'Franklin Gothic Medium', Arial, sans-serif
+}
+
+.list a {
+    padding: 5px 10px;
+    text-decoration: none;
+}
+
+.link:hover .list {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    background-color: rgb(81, 184, 81);
+    padding: 0;
+    margin: 0;
+}
+
+.link:hover {
+    background-color: rgb(81, 184, 81);
+}
+
+.list a:hover {
+    background-color: rgb(130, 255, 130);
+}
