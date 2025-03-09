@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { FontAwesomeIcon } from '../plugins/font-awesome'
+import { FontAwesomeIcon } from '../../plugins/font-awesome'
+import { useCurrentUser } from '../../composables/useCurrentUser'
 
+// define reactive variables for post content, selected subject, selected mood, and public/private status
 const postContent = ref('')
 const selectedSubject = ref('')
 const selectedMood = ref('')
 const isPublic = ref(true)
 
+// destructure the necessary properties and methods from the useCurrentUser composable
+const { currentUser, addActivity } = useCurrentUser()
+
+// define available subjects and moods
 const subjects = [
   'Computer Science',
   'Physics',
@@ -26,14 +32,32 @@ const moods = [
   '💪 Productive'
 ]
 
-const handleSubmit = () => {
-  console.log({
-    content: postContent.value,
+// handle the submission of a new post
+const handlePostSubmit = () => {
+  if (!currentUser.value) return
+
+  // create a new activity object
+  const newActivity = {
+    id: currentUser.value.activities.length + 1,
+    username: currentUser.value.username,
+    avatar: currentUser.value.avatar,
+    title: postContent.value,
+    duration: 30, // placeholder for timer feature
     subject: selectedSubject.value,
     mood: selectedMood.value,
-    isPublic: isPublic.value
-  })
+    likes: 0,
+    reposts: 0,
+    date: new Date().toISOString(),
+  }
+
+  // add the new activity to the current user's activities
+  addActivity(newActivity)
+
+  // reset the form fields
   postContent.value = ''
+  selectedSubject.value = ''
+  selectedMood.value = ''
+  isPublic.value = true
 }
 </script>
 
@@ -43,16 +67,18 @@ const handleSubmit = () => {
       <div class="card-content">
         <div class="media">
           <div class="media-left">
+            <!-- user's profile picture -->
             <figure class="image is-64x64">
-              <img class="is-rounded" src="/src/assets/images/blankpicture.png" alt="Profile">
+              <img class="is-rounded" src="/src/assets/images/blankpicture.png" alt="profile">
             </figure>
           </div>
           <div class="media-content">
             <div class="field">
               <p class="control">
+                <!-- textarea for post content -->
                 <textarea 
                   class="textarea" 
-                  placeholder="Share a Study Update..."
+                  placeholder="Share a study update..."
                   v-model="postContent"
                 ></textarea>
               </p>
@@ -64,6 +90,7 @@ const handleSubmit = () => {
           <div class="level-left">
             <div class="level-item mr-2">
               <div class="select is-small">
+                <!-- dropdown for selecting subject -->
                 <select v-model="selectedSubject">
                   <option value="" disabled selected>Subject</option>
                   <option v-for="subject in subjects" :key="subject" :value="subject">
@@ -75,6 +102,7 @@ const handleSubmit = () => {
             
             <div class="level-item mr-2">
               <div class="select is-small">
+                <!-- dropdown for selecting mood -->
                 <select v-model="selectedMood">
                   <option value="" disabled selected>Mood</option>
                   <option v-for="mood in moods" :key="mood" :value="mood">
@@ -89,6 +117,7 @@ const handleSubmit = () => {
         <div class="level">
           <div class="level-left">
             <div class="level-item">
+              <!-- button to add a photo -->
               <button class="button is-small">
                 <span class="icon">
                   <FontAwesomeIcon icon="fa-solid fa-image" />
@@ -98,6 +127,7 @@ const handleSubmit = () => {
             </div>
 
             <div class="level-item ml-2">
+              <!-- button to start a timer -->
               <button class="button is-warning is-small">
                 <span class="icon">
                   <FontAwesomeIcon icon="fas fa-clock" />
@@ -107,9 +137,10 @@ const handleSubmit = () => {
             </div>
           </div>
 
-          <div class="level-right ">
+          <div class="level-right">
             <div class="level-item mr-2">
               <div class="field has-fixed-width">
+                <!-- switch to toggle public/private status -->
                 <input 
                   id="publicSwitch" 
                   type="checkbox" 
@@ -121,9 +152,10 @@ const handleSubmit = () => {
             </div>
 
             <div class="level-item">
+              <!-- button to submit the post -->
               <button 
                 class="button is-primary" 
-                @click="handleSubmit"
+                @click="handlePostSubmit"
                 :disabled="!postContent.trim() || !selectedSubject || !selectedMood"
               >
                 Post
@@ -135,7 +167,6 @@ const handleSubmit = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .card {
@@ -158,7 +189,6 @@ const handleSubmit = () => {
 .button.is-primary {
   transition: background-color 0.3s ease;
 }
-
 
 .switch[type="checkbox"] {
   appearance: none;
@@ -210,5 +240,4 @@ const handleSubmit = () => {
   font-size: 1.0rem;
   white-space: nowrap;
 }
-
 </style>

@@ -1,16 +1,25 @@
 <script setup lang="ts">
 import { users } from '../data/users'
+import { useCurrentUser } from '../composables/useCurrentUser'
 
+// destructure the necessary properties and methods from the useCurrentUser composable
+const { currentUser, setCurrentUser } = useCurrentUser();
 
+// handle user selection and set the current user
+const handleUserSelect = (user: typeof users[0]) => {
+  setCurrentUser(user);
+  console.log('User selected:', user);
+};
 </script>
 
 <template>
     <div>
         <nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-            <img class = "navbar-item" src = "/src/assets/studyhive-logo.svg" alt="logo" width = 100 >
+            <!-- logo -->
+            <img class="navbar-item" src="/src/assets/studyhive-logo.svg" alt="logo" width="100">
 
-
+            <!-- burger menu for mobile view -->
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -21,6 +30,7 @@ import { users } from '../data/users'
 
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
+            <!-- navigation links -->
             <a class="navbar-item">
                 Home
             </a>
@@ -29,7 +39,7 @@ import { users } from '../data/users'
                 Study
             </a>
 
-            <div class="navbar-item has-dropdown is-hoverable">
+                        <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
                     Menu
                 </a>
@@ -42,32 +52,39 @@ import { users } from '../data/users'
                     Notifications
                 </a>
                 <a class="navbar-item">
-                    Profile
+                    Edit Profile
+                </a>
+
+                <!-- admin settings link, visible only to admin users -->
+                <a class="navbar-item" v-if="currentUser?.role === 'admin'">
+                    admin settings
                 </a>
                 </div>
             </div>
-
- 
             </div>
 
             <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
+                    <!-- sign up button -->
                     <a class="button is-primary">
                         <strong>Sign up</strong>
                     </a>
-                    <div class="navbar-item is-warninghas-dropdown is-hoverable">
+                    <!-- log in dropdown menu -->
+                    <div class="navbar-item is-warning has-dropdown is-hoverable">
                         <a class="navbar-link">
-                            Log In
+                            Log in
                         </a>
 
                         <div class="navbar-dropdown">
+                            <!-- loop through users and display each one as a login option -->
                             <a v-for="user in users" 
                             :key="user.id" 
                             class="navbar-item"
+                            @click="handleUserSelect(user)"
                             >
                                 <div class="media">
-                                <div class="media-left">
+                                    <div class="media-left">
                                         <figure class="image is-32x32">
                                             <img class="is-rounded" :src="user.avatar" :alt="user.name">
                                         </figure>
@@ -84,7 +101,7 @@ import { users } from '../data/users'
                                 </div>
                             </a>
                         </div>
-                </div>          
+                    </div>          
                 </div>
             </div>
             </div>
@@ -95,13 +112,12 @@ import { users } from '../data/users'
 
 <style scoped>
 .navbar-dropdown {
-  min-width: 100px;  /* Ensure dropdown is wide enough for content */
-  right: 0;          /* Align to right edge of parent */
-  left: auto;        /* Override default left alignment */
+  min-width: 100px; 
+  right: 0;         
+  left: auto;        
 }
 
 .navbar-item.has-dropdown {
-  position: relative;  /* Ensure proper positioning context */
+  position: relative;  /* ensure proper positioning context */
 }
-
 </style>

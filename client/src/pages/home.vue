@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import FriendFeed from '@/components/FriendFeed.vue';
-import ProfileFeed from '@/components/ProfileFeed.vue';
-import StudyFeed from '@/components/StudyFeed.vue';
+import FriendFeed from '@/components/HomeComponents/FriendFeed.vue';
+import ProfileFeed from '@/components/HomeComponents/ProfileFeed.vue';
+import StudyFeed from '@/components/HomeComponents/StudyFeed.vue';
 </script>
 
 <template>
