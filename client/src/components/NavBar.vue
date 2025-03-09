@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import { users } from '../data/users'
 import { useCurrentUser } from '../composables/useCurrentUser'
+import type { User } from '../data/users'
 
 // destructure the necessary properties and methods from the useCurrentUser composable
-const { currentUser, setCurrentUser } = useCurrentUser();
+const { currentUser, setCurrentUser, users } = useCurrentUser();
 
 // handle user selection and set the current user
-const handleUserSelect = (user: typeof users[0]) => {
+const handleUserSelect = (user: User) => {
   setCurrentUser(user);
-  console.log('User selected:', user);
+
+  //switch log in to log out
 };
 </script>
 
@@ -31,13 +32,13 @@ const handleUserSelect = (user: typeof users[0]) => {
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
             <!-- navigation links -->
-            <a class="navbar-item">
+            <RouterLink class="navbar-item" to="/">
                 Home
-            </a>
+            </RouterLink>
 
-            <a class="navbar-item">
+            <RouterLink class="navbar-item" to = "/study">
                 Study
-            </a>
+            </RouterLink>
 
                         <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
@@ -45,20 +46,22 @@ const handleUserSelect = (user: typeof users[0]) => {
                 </a>
 
                 <div class="navbar-dropdown">
-                <a class="navbar-item">
+                <RouterLink class="navbar-item" to = "/friends">
                     Friends
-                </a>
-                <a class="navbar-item ">
+                </RouterLink>
+
+                <RouterLink class="navbar-item " to = "/notifications">
                     Notifications
-                </a>
-                <a class="navbar-item">
+                </RouterLink>
+
+                <RouterLink class="navbar-item" to = "/edit-profile">
                     Edit Profile
-                </a>
+                </RouterLink>
 
                 <!-- admin settings link, visible only to admin users -->
-                <a class="navbar-item" v-if="currentUser?.role === 'admin'">
-                    admin settings
-                </a>
+                <RouterLink class="navbar-item" v-if="currentUser?.role === 'admin'" to = "/admin">
+                    Admin Settings
+                </RouterLink>
                 </div>
             </div>
             </div>
