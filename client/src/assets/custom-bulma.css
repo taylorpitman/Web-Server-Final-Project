@@ -1,0 +1,52 @@
+/* StudyHive Custom Colors */
+.is-primary {
+    background-color: #61a6ab !important;
+    color: #fff !important;
+}
+
+.is-success {
+    background-color: #f6f6e9 !important;
+    color: #291b25 !important;
+}
+
+.is-danger {
+    background-color: #ed5b2d !important;
+    color: #fff !important;
+}
+
+.is-warning {
+    background-color: #ffce6d !important;
+    color: #291b25 !important;
+}
+
+.is-info {
+    background-color: #291b25 !important;
+    color: #fff !important;
+}
+
+/* Navbar specific overrides */
+.navbar.is-light {
+    background-color: #f6f6e9;
+}
+
+/* Button hover states */
+.button.is-primary:hover {
+    background-color: #4d8a8f !important;
+}
+
+.button.is-success:hover {
+    background-color: #e8e8d8 !important;
+}
+
+.button.is-danger:hover {
+    background-color: #d64d21 !important;
+}
+
+.button.is-warning:hover {
+    background-color: #ffbd40 !important;
+}
+
+.button.is-info:hover {
+    background-color: #1a1116 !important;
+}
+
