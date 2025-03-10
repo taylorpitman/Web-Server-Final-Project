@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { useCurrentUser } from '../composables/useCurrentUser'
 import type { User } from '../data/users'
+import { ref } from 'vue'
+
+const isActive = ref(false)
 
 // destructure the necessary properties and methods from the useCurrentUser composable
 const { currentUser, setCurrentUser, users } = useCurrentUser();
@@ -21,15 +24,17 @@ const handleUserSelect = (user: User) => {
             <img class="navbar-item" src="/src/assets/studyhive-logo.svg" alt="logo" width="100">
 
             <!-- burger menu for mobile view -->
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-            <span aria-hidden="true"></span>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample"
+                :class="{ 'is-active': isActive }" @click="isActive = !isActive">
+            
+                <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
             </a>
         </div>
 
-        <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-menu" :class="{ 'is-active': isActive }">
             <div class="navbar-start">
             <!-- navigation links -->
             <RouterLink class="navbar-item" to="/">
