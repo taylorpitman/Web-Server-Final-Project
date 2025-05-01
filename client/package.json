@@ -17,6 +17,7 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@supabase/supabase-js": "^2.49.4",
     "@vueuse/core": "^12.8.2",
     "bulma": "^1.0.3",
     "dayjs": "^1.11.13",
