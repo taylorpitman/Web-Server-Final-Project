@@ -5,9 +5,13 @@ const { connect } = require('./supabase');
 const TABLE_NAME = 'friends';
 
 const friendsModel = {
-  async createFriends(friendsData) {
+  async createFriend(friendsData) {
     const { data, error } = await connect().from(TABLE_NAME).insert(friendsData).select();
-    if (error) throw new CustomError('Failed to create friends', statusCodes.BAD_REQUEST);
+    if (error) {
+      console.error('Error creating friendship:', error);
+      throw new CustomError('Failed to create friendship', statusCodes.BAD_REQUEST);
+    }    
+    
     return data[0];
   },
 

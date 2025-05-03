@@ -5,10 +5,12 @@ const { connect } = require('./supabase');
 const TABLE_NAME = 'analytics';
 
 const analyticsModel = {
-  async createAnalytics(analyticsData) {
+  async createAnalytic(analyticsData) {
     const { data, error } = await connect().from(TABLE_NAME).insert(analyticsData).select();
-    if (error) throw new CustomError('Failed to create analytics', statusCodes.BAD_REQUEST);
-    return data[0];
+    if (error) {
+      console.error('Error creating analytic:', error);
+      throw new CustomError('Failed to create analytic', statusCodes.BAD_REQUEST);
+    }        return data[0];
   },
 
   async getAllAnalytics() {

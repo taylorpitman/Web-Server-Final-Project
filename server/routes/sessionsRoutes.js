@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const sessionController = require('../controllers/sessionController'); // Changed from import to require
+const sessionController = require('../controllers/sessionsController'); // Changed from import to require
 
 router.post('/create', sessionController.createSession);
 router.get('/all', sessionController.getAllSessions);

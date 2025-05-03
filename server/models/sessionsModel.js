@@ -2,12 +2,38 @@
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
-const TABLE_NAME = 'session';
+const TABLE_NAME = 'sessions';
+async  function validateForeignKeys({ user_id, subject_id }) {
+  const supabase = connect();
+
+  const [userRes, subjectRes] = await Promise.all([
+    supabase.from('users').select('id').eq('id', user_id).single(),
+    supabase.from('subjects').select('id').eq('id', subject_id).single()
+  ]);
+
+  if (userRes.error || !userRes.data) {
+    throw new CustomError(`User ID ${user_id} does not exist`, statusCodes.BAD_REQUEST);
+  }
+
+  if (subjectRes.error || !subjectRes.data) {
+    throw new CustomError(`Subject ID ${subject_id} does not exist`, statusCodes.BAD_REQUEST);
+  }
+}
 
 const sessionModel = {
+
   async createSession(sessionData) {
-    const { data, error } = await connect().from(TABLE_NAME).insert(sessionData).select();
-    if (error) throw new CustomError('Failed to create session', error);
+    await validateForeignKeys(sessionData); // Validate foreign keys
+    const { data, error } = await connect().from(TABLE_NAME).insert(sessionData).select('*');
+
+    if (error) {
+      throw new CustomError('Failed to create session', statusCodes.BAD_REQUEST);
+    }
+
+    if (!data || data.length === 0) {
+      throw new CustomError('Session not created', statusCodes.INTERNAL_SERVER_ERROR);
+    }
+
     return data[0];
   },
 
@@ -83,6 +109,9 @@ const sessionModel = {
         if (error) throw new CustomError('Failed to fetch session summary for this date', statusCodes.BAD_REQUEST);
         return data[0];
     },
+
+
+    
 };
 
 module.exports = sessionModel;

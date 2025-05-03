@@ -2,13 +2,16 @@
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
-const TABLE_NAME = 'subject';
+const TABLE_NAME = 'subjects';
 
 
 const subjectModel = {
   async createSubject(subjectData) {
     const { data, error } = await connect().from(TABLE_NAME).insert(subjectData).select();
-    if (error) throw new CustomError('Failed to create subject', statusCodes.BAD_REQUEST);
+    if (error) {
+      console.error('Error creating subject:', error);
+      throw new CustomError('Failed to create subject', statusCodes.BAD_REQUEST);
+    }
     return data[0];
   },
 

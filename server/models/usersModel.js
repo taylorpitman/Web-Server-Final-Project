@@ -2,7 +2,8 @@
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
-const TABLE_NAME = 'user';
+
+const TABLE_NAME = 'users';
 
 const userModel = {
   async createUser(userData) {
@@ -12,7 +13,7 @@ const userModel = {
     return data[0];
   },
 
-  async getAllUser() {
+  async getAllUsers() {
     const { data, error } = await connect().from(TABLE_NAME).select('*');
     if (error) throw new CustomError('Failed to fetch user', statusCodes.BAD_REQUEST);
     return data;

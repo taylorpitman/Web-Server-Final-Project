@@ -2,12 +2,16 @@
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
-const TABLE_NAME = 'post';
+const TABLE_NAME = 'posts';
 
 const postModel = {
   async createPost(postData) {
     const { data, error } = await connect().from(TABLE_NAME).insert(postData).select();
-    if (error) throw new CustomError('Failed to create post', statusCodes.BAD_REQUEST);
+    if (error) {
+      console.error('Error creating post:', error);
+      throw new CustomError('Failed to create post', statusCodes.BAD_REQUEST);
+    }    
+    
     return data[0];
   },
 
