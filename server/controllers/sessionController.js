@@ -1,10 +1,12 @@
+
+
 const sessionModel = require('../models/sessionModel');
-const { CustomError, statusCodes } = require('../tools/errors');
+const { CustomError, statusCodes } = require('../models/errors');
 
 // Create a new session
 exports.createSession = async (req, res, next) => {
   try {
-    const session = await sessionModel.createSession({ ...req.body, user_id: req.user.id });
+    const session = await sessionModel.createSession(req.body);
     res.status(statusCodes.CREATED).json(session);
   } catch (error) {
     next(error);

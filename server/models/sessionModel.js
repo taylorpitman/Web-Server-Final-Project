@@ -7,7 +7,7 @@ const TABLE_NAME = 'session';
 const sessionModel = {
   async createSession(sessionData) {
     const { data, error } = await connect().from(TABLE_NAME).insert(sessionData).select();
-    if (error) throw new CustomError('Failed to create session', statusCodes.BAD_REQUEST);
+    if (error) throw new CustomError('Failed to create session', error);
     return data[0];
   },
 

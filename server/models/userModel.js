@@ -6,6 +6,7 @@ const TABLE_NAME = 'user';
 
 const userModel = {
   async createUser(userData) {
+    console.log('Creating user:', userData);
     const { data, error } = await connect().from(TABLE_NAME).insert(userData).select();
     if (error) throw new CustomError('Failed to create user', statusCodes.BAD_REQUEST);
     return data[0];
