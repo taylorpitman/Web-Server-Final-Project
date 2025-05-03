@@ -2,7 +2,6 @@
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
-
 const TABLE_NAME = 'users';
 
 const userModel = {
@@ -15,7 +14,7 @@ const userModel = {
 
   async getAllUsers() {
     const { data, error } = await connect().from(TABLE_NAME).select('*');
-    if (error) throw new CustomError('Failed to fetch user', statusCodes.BAD_REQUEST);
+    if (error) throw new CustomError('Failed to fetch users', statusCodes.BAD_REQUEST);
     return data;
   },
 
@@ -37,35 +36,126 @@ const userModel = {
     return { success: true };
   },
 
-  //getUserByEmail(email) → for login/auth
   async getUserByEmail(email) {
     const { data, error } = await connect().from(TABLE_NAME).select('*').eq('email', email).single();
     if (error) throw new CustomError('User not found', statusCodes.NOT_FOUND);
     return data;
   },
 
-  //getOnlineFriends(userId) → join with friends table, return only online users
+  async getUserSubjects(userId) {
+    const { data, error } = await connect()
+      .from('subjects')
+      .select('*')
+      .eq('user_id', userId);
+    if (error) throw new CustomError('Failed to fetch user subjects', statusCodes.BAD_REQUEST);
+    return data;
+  },
+
+  async getUserFriends(userId) {
+    const { data, error } = await connect()
+      .from('friends')
+      .select('*, users!friends_friend_id_fkey(*)')
+      .eq('user_id', userId);
+    if (error) throw new CustomError('Failed to fetch user friends', statusCodes.BAD_REQUEST);
+    return data.map(row => row.users); // Map to return friend details
+  },
+
+  async getUserPosts(userId) {
+    const { data, error } = await connect()
+      .from('posts')
+      .select('*')
+      .eq('user_id', userId);
+    if (error) throw new CustomError('Failed to fetch user posts', statusCodes.BAD_REQUEST);
+    return data;
+  },
+
   async getOnlineFriends(userId) {
     const { data, error } = await connect()
-      .from(TABLE_NAME)
-      .select('*, friends!inner(*)')
-      .eq('friends.user_id', userId)
-      .eq('friend.is_online', true);
-
+      .from('friends')
+      .select('*, users!friends_friend_id_fkey(*)') // Assuming a foreign key relationship
+      .eq('user_id', userId)
+      .eq('users.is_online', true);
     if (error) throw new CustomError('Failed to fetch online friends', statusCodes.BAD_REQUEST);
-    return data.map(row => row.friend); 
-    
+    return data.map(row => row.users); // Map to return friend details
   },
-    //setUserOnlineStatus(userId, status) → update boolean is_online 
-    async setUserOnlineStatus(userId, status) {
-        const { data, error } = await connect()
-            .from(TABLE_NAME)
-            .update({ is_online: status })
-            .eq('id', userId)
-            .select();
-        if (error) throw new CustomError('Failed to update online status', statusCodes.BAD_REQUEST);
-        return data[0];
-    }
+
+  async getFriendRequests(userId) {
+    const { data, error } = await connect()
+      .from('friends')
+      .select('*, users!friends_friend_id_fkey(*)') // Assuming a foreign key relationship
+      .eq('friend_id', userId)
+      .eq('status', 'pending');
+    if (error) throw new CustomError('Failed to fetch friend requests', statusCodes.BAD_REQUEST);
+    return data.map(row => row.users); // Map to return requester details
+  },
+
+  async getUserAnalytics(userId) {
+    const { data, error } = await connect()
+      .from('analytics')
+      .select('*')
+      .eq('user_id', userId);
+    if (error) throw new CustomError('Failed to fetch user analytics', statusCodes.BAD_REQUEST);
+    return data;
+  },
+
+  async sendFriendRequest(userId, friendId) {
+    const { data, error } = await connect()
+      .from('friends')
+      .insert({ user_id: userId, friend_id: friendId, status: 'pending' })
+      .select();
+    if (error) throw new CustomError('Failed to send friend request', statusCodes.BAD_REQUEST);
+    return data[0];
+  },
+
+  async acceptFriendRequest(userId, friendId) {
+    const { data, error } = await connect()
+      .from('friends')
+      .update({ status: 'accepted' })
+      .eq('user_id', friendId)
+      .eq('friend_id', userId)
+      .select();
+    if (error) throw new CustomError('Failed to accept friend request', statusCodes.BAD_REQUEST);
+    return data[0];
+  },
+
+  async declineFriendRequest(userId, friendId) {
+    const { error } = await connect()
+      .from('friends')
+      .delete()
+      .eq('user_id', friendId)
+      .eq('friend_id', userId);
+    if (error) throw new CustomError('Failed to decline friend request', statusCodes.BAD_REQUEST);
+    return { success: true };
+  },
+
+  async removeFriend(userId, friendId) {
+    const { error } = await connect()
+      .from('friends')
+      .delete()
+      .or(`(user_id.eq.${userId},friend_id.eq.${friendId})`)
+      .or(`(user_id.eq.${friendId},friend_id.eq.${userId})`);
+    if (error) throw new CustomError('Failed to remove friend', statusCodes.BAD_REQUEST);
+    return { success: true };
+  },
+
+  async removeSubjectFromUser(userId, subjectId) {
+    const { error } = await connect()
+      .from('subjects')
+      .delete()
+      .eq('user_id', userId)
+      .eq('id', subjectId);
+    if (error) throw new CustomError('Failed to remove subject from user', statusCodes.BAD_REQUEST);
+    return { success: true };
+  },
+
+  async searchUsers(term) {
+    const { data, error } = await connect()
+      .from(TABLE_NAME)
+      .select('*')
+      .ilike('username', `%${term}%`);
+    if (error) throw new CustomError('Failed to search users', statusCodes.BAD_REQUEST);
+    return data;
+  }
 };
 
 module.exports = userModel;

@@ -1,0 +1,28 @@
+### Create a new post
+POST http://localhost:8000/api/posts/create
+Content-Type: application/json
+
+{
+  "title": "First Post",
+  "content": "This is the content of the first post",
+  "author": "John Doe"
+}
+
+### Get all posts
+GET http://localhost:8000/api/posts
+
+### Get a post by ID
+GET http://localhost:8000/api/posts/1
+
+### Update a post by ID
+PUT http://localhost:8000/api/posts/1
+Content-Type: application/json
+
+{
+  "title": "Updated First Post",
+  "content": "This is the updated content of the first post",
+  "author": "John Doe"
+}
+
+### Delete a post by ID
+DELETE http://localhost:8000/api/posts/1

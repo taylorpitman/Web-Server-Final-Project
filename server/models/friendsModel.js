@@ -21,19 +21,19 @@ const friendsModel = {
     return data;
   },
 
-  async getFriendsById(id) {
+  async getFriendById(id) {
     const { data, error } = await connect().from(TABLE_NAME).select('*').eq('id', id).single();
     if (error) throw new CustomError('Friends not found', statusCodes.NOT_FOUND);
     return data;
   },
 
-  async updateFriends(id, updatedData) {
+  async updateFriend(id, updatedData) {
     const { data, error } = await connect().from(TABLE_NAME).update(updatedData).eq('id', id).select();
     if (error) throw new CustomError('Failed to update friends', statusCodes.BAD_REQUEST);
     return data[0];
   },
 
-  async deleteFriends(id) {
+  async deleteFriend(id) {
     const { error } = await connect().from(TABLE_NAME).delete().eq('id', id);
     if (error) throw new CustomError('Failed to delete friends', statusCodes.BAD_REQUEST);
     return { success: true };

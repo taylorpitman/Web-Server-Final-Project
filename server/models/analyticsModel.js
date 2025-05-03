@@ -19,7 +19,7 @@ const analyticsModel = {
     return data;
   },
 
-  async getAnalyticsById(id) {
+  async getAnalyticById(id) {
     const { data, error } = await connect().from(TABLE_NAME).select('*').eq('id', id).single();
     if (error) throw new CustomError('Analytics not found', statusCodes.NOT_FOUND);
     return data;
@@ -52,17 +52,40 @@ const analyticsModel = {
   },
 
   //incrementStreak(userId) → increment streak_count if user studied yesterday too
-    async incrementStreak(userId) {
-        const { data, error } = await connect()
-        .from(TABLE_NAME)
-        .update({ streak_count: supabase.rpc('increment_int', { field: 'streak_count', step: 1 }) })
-        .eq('user_id', userId)
-        .eq('date', date)
-        .select();
-    
-        if (error) throw new CustomError('Failed to increment streak', statusCodes.BAD_REQUEST);
-        return data[0];
-    },
+  async incrementStreak(userId, date) {
+    const db = connect();
+  
+    // Step 1: Fetch current streak count
+    const { data: current, error: fetchError } = await db
+      .from(TABLE_NAME)
+      .select('streak_count')
+      .eq('user_id', userId)
+      .eq('date', date)
+      .single();
+  
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      console.error('🔴 Fetch error:', fetchError);
+      throw new CustomError('Failed to fetch streak count', statusCodes.BAD_REQUEST);
+    }
+  
+    const newCount = (current?.streak_count || 0) + 1;
+  
+    // Step 2: Update streak count
+    const { data, error } = await db
+      .from(TABLE_NAME)
+      .update({ streak_count: newCount })
+      .eq('user_id', userId)
+      .eq('date', date)
+      .select();
+  
+    if (error) {
+      console.error('🔴 Update error:', error);
+      throw new CustomError('Failed to increment streak', statusCodes.BAD_REQUEST);
+    }
+  
+    return data[0];
+  },
+  
 
   //resetStreak(userId) → reset to 1 if they broke the streak
     async resetStreak(userId) {
@@ -70,7 +93,6 @@ const analyticsModel = {
         .from(TABLE_NAME)
         .update({ streak_count: 1 })
         .eq('user_id', userId)
-        .eq('date', date)
         .select();
     
         if (error) throw new CustomError('Failed to reset streak', statusCodes.BAD_REQUEST);

@@ -1,0 +1,28 @@
+### Create a new friend
+POST http://localhost:8000/api/friends/create
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "friend_id": 4,
+  "status": "pending"
+}
+
+### Get all friends
+GET http://localhost:8000/api/friends
+
+### Get a friend by ID
+GET http://localhost:8000/api/friends/8
+
+### Update a friend by ID
+PUT http://localhost:8000/api/friends/8
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "friend_id": 4,
+  "status": "accepted"
+}
+
+### Delete a friend by ID
+DELETE http://localhost:8000/api/friends/9

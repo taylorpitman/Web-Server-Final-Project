@@ -3,27 +3,11 @@ const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
 const TABLE_NAME = 'sessions';
-async  function validateForeignKeys({ user_id, subject_id }) {
-  const supabase = connect();
 
-  const [userRes, subjectRes] = await Promise.all([
-    supabase.from('users').select('id').eq('id', user_id).single(),
-    supabase.from('subjects').select('id').eq('id', subject_id).single()
-  ]);
-
-  if (userRes.error || !userRes.data) {
-    throw new CustomError(`User ID ${user_id} does not exist`, statusCodes.BAD_REQUEST);
-  }
-
-  if (subjectRes.error || !subjectRes.data) {
-    throw new CustomError(`Subject ID ${subject_id} does not exist`, statusCodes.BAD_REQUEST);
-  }
-}
 
 const sessionModel = {
 
   async createSession(sessionData) {
-    await validateForeignKeys(sessionData); // Validate foreign keys
     const { data, error } = await connect().from(TABLE_NAME).insert(sessionData).select('*');
 
     if (error) {
@@ -37,7 +21,7 @@ const sessionModel = {
     return data[0];
   },
 
-  async getAllSession() {
+  async getAllSessions() {
     const { data, error } = await connect().from(TABLE_NAME).select('*');
     if (error) throw new CustomError('Failed to fetch session', statusCodes.BAD_REQUEST);
     return data;
@@ -75,18 +59,6 @@ const sessionModel = {
         return data;
     },
 
-  // getSessionsByUser(userId) → for session history or analytics
-    async getSessionsByUser(userId) {
-        const { data, error } = await connect()
-        .from(TABLE_NAME)
-        .select('*')
-        .eq('user_id', userId)
-        .order('start_time', { ascending: false });
-    
-        if (error) 
-            throw new CustomError('Failed to fetch sessions for this user', statusCodes.BAD_REQUEST);
-        return data;
-    },
 
   // endSessionById(sessionId) → auto-fill end_time, set is_active = false
     async endSessionById(sessionId) {

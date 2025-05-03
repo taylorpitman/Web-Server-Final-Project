@@ -15,7 +15,7 @@ const postModel = {
     return data[0];
   },
 
-  async getAllPost() {
+  async getAllPosts() {
     const { data, error } = await connect().from(TABLE_NAME).select('*');
     if (error) throw new CustomError('Failed to fetch post', statusCodes.BAD_REQUEST);
     return data;
@@ -44,29 +44,6 @@ const postModel = {
     return { success: true };
   },
 
-//getPostsByUser(userId) → for "my posts" view
-  async getPostsByUser (userId) {
-    const { data, error } = await connect()
-        .from(TABLE_NAME)
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-    if (error) throw new CustomError('Failed to fetch posts for this user', statusCodes.BAD_REQUEST);
-    return data;
-  },
-
-//getRecentPosts(limit = 10) → for timeline
-    async getRecentPosts (limit = 10) {
-        const { data, error } = await connect()
-            .from(TABLE_NAME)
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(limit);
-    
-        if (error) throw new CustomError('Failed to fetch recent posts', statusCodes.BAD_REQUEST);
-        return data;
-    },
 };
 
 

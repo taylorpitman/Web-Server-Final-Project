@@ -1,0 +1,41 @@
+### Create Analytic
+POST http://localhost:8000/api/analytics/create
+Content-Type: application/json
+
+{
+  "user_id":2,
+  "total_minutes": 120,
+  "session_count": 5,
+  "average_mood": "happy",
+  "streak_count": 3
+}
+
+### Get All Analytics
+GET http://localhost:8000/api/analytics/
+
+### Get Analytics by ID
+GET http://localhost:8000/api/analytics/3
+
+
+### Update Analytics
+PUT http://localhost:8000/api/analytics/3
+Content-Type: application/json
+
+{
+  "user_id":2,
+  "total_minutes": 120,
+  "session_count": 5,
+  "average_mood": "sad",
+  "streak_count": 6
+}
+
+### Increment Streak - NOT WORKING RN
+PATCH http://localhost:8000/api/analytics/3/increment-streak
+Content-Type: application/json
+
+{
+  "date": "2025-05-01T10:00:00.000Z"
+}
+
+### Delete Analytics
+DELETE http://localhost:8000/api/analytics/2

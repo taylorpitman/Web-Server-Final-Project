@@ -15,7 +15,7 @@ const subjectModel = {
     return data[0];
   },
 
-  async getAllSubject() {
+  async getAllSubjects() {
     const { data, error } = await connect().from(TABLE_NAME).select('*');
     if (error) throw new CustomError('Failed to fetch subject', statusCodes.BAD_REQUEST);
     return data;

@@ -1,0 +1,26 @@
+### Create a new subject
+POST http://localhost:8000/api/subjects/create
+Content-Type: application/json
+
+{
+  "name": "Mathematics",
+  "description": "Study of numbers and shapes"
+}
+
+### Get all subjects
+GET http://localhost:8000/api/subjects
+
+### Get a subject by ID
+GET http://localhost:8000/api/subjects/1
+
+### Update a subject by ID
+PUT http://localhost:8000/api/subjects/1
+Content-Type: application/json
+
+{
+  "name": "Advanced Mathematics",
+  "description": "In-depth study of numbers and shapes"
+}
+
+### Delete a subject by ID
+DELETE http://localhost:8000/api/subjects/1

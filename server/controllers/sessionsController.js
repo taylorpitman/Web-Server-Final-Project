@@ -19,27 +19,18 @@ exports.createSession = async (req, res, next) => {
 // Get all sessions (dev/debug)
 exports.getAllSessions = async (req, res, next) => {
   try {
-    const sessions = await sessionModel.getAllSession();
+    const sessions = await sessionModel.getAllSessions();
     res.status(statusCodes.OK).json(sessions);
   } catch (error) {
     next(error);
   }
 };
 
-// Get all sessions for current user
-exports.getSessionsByUser = async (req, res, next) => {
-  try {
-    const sessions = await sessionModel.getSessionsByUser(req.user.id);
-    res.status(statusCodes.OK).json(sessions);
-  } catch (error) {
-    next(error);
-  }
-};
 
 // Get active session for current user
 exports.getActiveSessionByUser = async (req, res, next) => {
   try {
-    const session = await sessionModel.getActiveSessionByUser(req.user.id);
+    const session = await sessionModel.getActiveSessionByUser(req.params.id);
     res.status(statusCodes.OK).json(session);
   } catch (error) {
     next(error);

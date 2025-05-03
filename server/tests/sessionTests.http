@@ -1,0 +1,42 @@
+## Create a new session
+###
+POST http://localhost:8000/api/sessions/create
+Content-Type: application/json
+
+{
+  "user_id": 4,
+  "subject_id": 6,
+  "start_time": "2025-05-01T10:00:00.000Z",
+  "end_time": "2025-05-01T10:25:00.000Z",
+  "is_active": false
+}
+
+###GET SESSIONS
+###
+GET http://localhost:8000/api/sessions/
+
+###
+GET http://localhost:8000/api/sessions/11
+
+###
+GET http://localhost:8000/api/sessions/active/3
+
+
+###UPDATE SESSION
+###
+PATCH http://localhost:8000/api/sessions/11
+Content-Type: application/json
+
+{
+  "user_id": 2,
+  "subject_id": 1,
+  "start_time": "2025-05-01T10:00:00.000Z",
+  "end_time": "2025-05-01T10:25:00.000Z",
+  "is_active": false
+}
+
+
+###DELETE SESSION
+###
+DELETE http://localhost:8000/api/sessions/1
+
