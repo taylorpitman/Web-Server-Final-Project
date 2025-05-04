@@ -12,16 +12,16 @@ const { currentUser } = useCurrentUser();
       <div class="box" v-if="currentUser">
         <!-- user's avatar -->
         <figure class="image is-128x128 mb-4">
-          <img class="is-rounded" :src="currentUser.avatar" :alt="currentUser.name">
+          <img class="is-rounded" src='../../assets/images/blankpicture.png' :alt="currentUser.name">
         </figure>
         <!-- user's name -->
         <h2 class="title is-5">{{ currentUser.name }}</h2>
         <!-- user's username -->
         <h3 class="subtitle mb-4 is-6">@{{ currentUser.username }}</h3>
         <!-- user's study streak -->
-        <p>📚 Study streak: <strong>{{ currentUser.streak }} days</strong></p>
+        <p>📚 Study streak: <strong> days</strong></p>
         <!-- user's study goal -->
-        <p>🎯 Study goal: <strong>{{ currentUser.study_goal / 60 }} hours</strong></p>
+        <p>🎯 Study goal: <strong>{{ currentUser.study_goal}} hours</strong></p>
         <!-- button to start a study session -->
         <button class="button is-primary is-fullwidth mt-3">Start Study Session</button>
       </div>
@@ -31,7 +31,7 @@ const { currentUser } = useCurrentUser();
 
 <style scoped>
 .column {
-  min-width: 350px;
+  width: 350px;
 }
 
 .box {

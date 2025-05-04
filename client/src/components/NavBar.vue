@@ -1,16 +1,30 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useCurrentUser } from '../composables/useCurrentUser'
-import type { User } from '../data/users'
+import type { User } from '@/services/usersService'
 
 // destructure the necessary properties and methods from the useCurrentUser composable
-const { currentUser, setCurrentUser, users } = useCurrentUser();
+const { currentUser, loadUser } = useCurrentUser();
+
+const allUsers  = ref<User[]>([]);
 
 // handle user selection and set the current user
-const handleUserSelect = (user: User) => {
-  setCurrentUser(user);
+const handleUserSelect = async (user: User) => {
+  await loadUser(user.id)                
+  sessionStorage.setItem('currentUserId', user.id.toString()) // optional persistence
+}
 
-  //switch log in to log out
-};
+onMounted(async () => {
+const { getAll } = await import('@/services/usersService')
+  const result = await getAll()
+  allUsers.value = result.items}
+
+)
+const logout = () => {
+  currentUser.value = null
+  sessionStorage.removeItem('currentUserId')
+}
+
 </script>
 
 <template>
@@ -70,40 +84,45 @@ const handleUserSelect = (user: User) => {
             <div class="navbar-item">
                 <div class="buttons">
                     <!-- sign up button -->
-                    <a class="button is-primary">
+                    <a  v-if="!currentUser" class="button is-primary">
                         <strong>Sign up</strong>
                     </a>
                     <!-- log in dropdown menu -->
-                    <div class="navbar-item is-warning has-dropdown is-hoverable">
+
+                          <!-- If user is logged in -->
+                        <div v-if="currentUser" class="navbar-item">
+                            <span>Hello, {{ currentUser.username }}</span>
+                            <button class="button navbar-item  is-hoverable is-warning ml-2" @click="logout">
+                            Log out
+                            </button>
+                        </div>
+
+
+                    <div v-if="!currentUser" class="navbar-item is-warning has-dropdown is-hoverable">
                         <a class="navbar-link">
                             Log in
                         </a>
 
+                        
                         <div class="navbar-dropdown">
-                            <!-- loop through users and display each one as a login option -->
-                            <a v-for="user in users" 
-                            :key="user.id" 
-                            class="navbar-item"
-                            @click="handleUserSelect(user)"
+                            <a
+                                v-for="user in allUsers"
+                                :key="user.id"
+                                class="navbar-item"
+                                @click="handleUserSelect(user)"
                             >
                                 <div class="media">
-                                    <div class="media-left">
-                                        <figure class="image is-32x32">
-                                            <img class="is-rounded" :src="user.avatar" :alt="user.name">
-                                        </figure>
+                                <div class="media-content">
+                                    <div class="content">
+                                    <p>
+                                        <strong>{{ user.username }}</strong>
+                                    </p>
                                     </div>
-                                    <div class="media-content">
-                                        <div class="content">
-                                            <p>
-                                                <strong>{{ user.name }}</strong>
-                                                <br>
-                                                <small>{{ user.major }}</small>
-                                            </p>
-                                        </div>
-                                    </div>
+                                </div>
                                 </div>
                             </a>
                         </div>
+                                
                     </div>          
                 </div>
             </div>

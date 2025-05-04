@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const PORT = 8000;
 require('dotenv').config();
+const cors = require('cors');
 
+app.use(cors());
 app.use(express.json());
 const sessionsRoutes = require('./routes/sessionsRoutes.js'); // Changed from import to require
 const analyticsRoutes = require('./routes/analyticsRoutes.js');

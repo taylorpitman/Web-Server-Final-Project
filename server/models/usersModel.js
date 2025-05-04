@@ -12,11 +12,25 @@ const userModel = {
     return data[0];
   },
 
-  async getAllUsers() {
-    const { data, error } = await connect().from(TABLE_NAME).select('*');
-    if (error) throw new CustomError('Failed to fetch users', statusCodes.BAD_REQUEST);
-    return data;
+  async getAll(limit = 30, offset = 0, sort = 'id', order = 'desc') {
+    const query = connect().from('users')
+      .select('*', { count: 'exact' }) // important
+      .order(sort, { ascending: order === 'asc' })
+      .range(offset, offset + limit - 1);
+  
+    const { data, count, error } = await query;
+  
+    if (error) throw error;
+  
+    return {
+      items: data,
+      total: count,
+      skip: offset,
+      limit
+    };
   },
+  
+    
 
   async getUserById(id) {
     const { data, error } = await connect().from(TABLE_NAME).select('*').eq('id', id).single();

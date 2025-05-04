@@ -12,14 +12,19 @@ exports.createUser = async (req, res, next) => {
   }
 };
 
-// Get all users
 exports.getAllUsers = async (req, res, next) => {
+  const { limit, offset, sort, order } = req.query;
   try {
-    const users = await userModel.getAllUsers();
-    res.status(statusCodes.OK).json(users);
-  } catch (error) {
-    console.error('Error fetching all users:', error);
-    next(error);
+    const data = await userModel.getAll(
+      Number(limit) || 30,
+      Number(offset) || 0,
+      sort || 'id',
+      order || 'desc'
+    );
+    res.send(data);
+  } catch (err) {
+    console.error('Error in getAllUsers:', err);
+    next(err);
   }
 };
 

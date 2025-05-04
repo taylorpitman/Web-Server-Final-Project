@@ -10,54 +10,13 @@ const selectedMood = ref('')
 const isPublic = ref(true)
 
 // destructure the necessary properties and methods from the useCurrentUser composable
-const { currentUser, addActivity } = useCurrentUser()
+const { currentUser } = useCurrentUser()
 
 // define available subjects and moods
-const subjects = [
-  'Computer Science',
-  'Physics',
-  'Chemistry',
-  'Biology',
-  'Literature',
-  'History',
-  'Other'
-]
 
-const moods = [
-  '😊 Motivated',
-  '😤 Focused',
-  '😓 Stressed',
-  '😴 Tired',
-  '🤔 Confused',
-  '💪 Productive'
-]
 
 // handle the submission of a new post
 const handlePostSubmit = () => {
-  if (!currentUser.value) return
-
-  // create a new activity object
-  const newActivity = {
-    id: currentUser.value.activities.length + 1,
-    username: currentUser.value.username,
-    avatar: currentUser.value.avatar,
-    title: postContent.value,
-    duration: 30, // placeholder for timer feature
-    subject: selectedSubject.value,
-    mood: selectedMood.value,
-    likes: 0,
-    reposts: 0,
-    date: new Date().toISOString(),
-  }
-
-  // add the new activity to the current user's activities
-  addActivity(newActivity)
-
-  // reset the form fields
-  postContent.value = ''
-  selectedSubject.value = ''
-  selectedMood.value = ''
-  isPublic.value = true
 }
 </script>
 
