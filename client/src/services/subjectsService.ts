@@ -28,3 +28,7 @@ export function update(subject: Subject): Promise<Subject> {
 export function remove(id: number): Promise<void> {
   return api(`subjects/${id}`, {}, 'DELETE')
 }
+
+export function getByUser(userId: number): Promise<Subject[]> {
+  return api(`users/${userId}/subjects`)
+}

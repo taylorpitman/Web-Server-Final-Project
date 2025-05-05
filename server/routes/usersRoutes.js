@@ -6,15 +6,21 @@ router.post('/create', userController.createUser);
 
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getUserById);
+
+router.put('/:id/subjects', userController.addSubjectToUser);
 router.get('/:id/subjects', userController.getUserSubjects);
-router.get('/:id/friends', userController.getUserFriends);
-router.get('/:id/friends/online', userController.getOnlineFriends);
-router.get('/:id/friends/requests', userController.getFriendRequests);
+router.delete('/:id/subjects/:subjectId', userController.removeSubjectFromUser);
+
+
 router.get('/:id/posts', userController.getUserPosts);
 router.get('/:id/analytics', userController.getUserAnalytics);
 
 router.patch('/:id', userController.updateUser);
 router.delete('/:id', userController.deleteUser);
+
+router.get('/:id/friends', userController.getUserFriends);
+router.get('/:id/friends/online', userController.getOnlineFriends);
+router.get('/:id/friends/requests', userController.getFriendRequests);
 
 router.post('/:id/friends/:friendId/request', userController.sendFriendRequest);
 router.post('/:id/friends/:friendId/accept', userController.acceptFriendRequest);
@@ -22,7 +28,8 @@ router.delete('/:id/friends/:friendId/decline', userController.declineFriendRequ
 router.delete('/:id/friends/:friendId', userController.removeFriend);
 
 router.delete('/:id/friends/:friendId', userController.removeFriend);
-router.delete('/:id/subjects/:subjectId', userController.removeSubjectFromUser);
+
+
 
 router.get('/search/:term', userController.searchUsers);
 

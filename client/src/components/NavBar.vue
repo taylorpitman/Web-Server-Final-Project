@@ -1,29 +1,48 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useCurrentUser } from '../composables/useCurrentUser'
-import type { User } from '@/services/usersService'
+import  { getAll, type User } from '@/services/usersService'
 
+import { isLoggedIn, login, logout, refSession } from '@/services/authService';
 // destructure the necessary properties and methods from the useCurrentUser composable
-const { currentUser, loadUser } = useCurrentUser();
 
-const allUsers  = ref<User[]>([]);
+const users = ref<User[]>([]); // array to hold all users
+const session = refSession(); // session object to manage user sessions
+
+
+getAll()
+  .then((response) => {
+    users.value = response.items; // populate the users array with the response data
+  })
+  .catch((error) => {
+    console.error('Error fetching users:', error);
+  });
 
 // handle user selection and set the current user
 const handleUserSelect = async (user: User) => {
-  await loadUser(user.id)                
-  sessionStorage.setItem('currentUserId', user.id.toString()) // optional persistence
+  login(user.id); // log in the user
+  sessionStorage.setItem('user', JSON.stringify(user)); // store the user in session storage
+  console.log('User selected:', user); // log the selected user
+}
+
+const handleLogout = async () => {
+  logout(); // log out the user
+  sessionStorage.removeItem('user'); // remove the user from session storage
+  window.location.reload(); // reload the page to reflect the changes
 }
 
 onMounted(async () => {
-const { getAll } = await import('@/services/usersService')
-  const result = await getAll()
-  allUsers.value = result.items}
+  const stored = sessionStorage.getItem('user')
+  if (stored) {
+    session.value.user = JSON.parse(stored)
+    if (session.value.user) {
+      login(session.value.user.id)
+    }
+  }
 
-)
-const logout = () => {
-  currentUser.value = null
-  sessionStorage.removeItem('currentUserId')
-}
+  const response = await getAll()
+  users.value = response.items
+})
+
 
 </script>
 
@@ -44,61 +63,61 @@ const logout = () => {
         </div>
 
         <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
-            <!-- navigation links -->
-            <RouterLink class="navbar-item" to="/">
-                Home
-            </RouterLink>
-
-            <RouterLink class="navbar-item" to = "/study">
-                Study
-            </RouterLink>
-
-                        <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                    Menu
-                </a>
-
-                <div class="navbar-dropdown">
-                <RouterLink class="navbar-item" to = "/friends">
-                    Friends
+            <div v-if ="session.user" class="navbar-start">
+                <!-- navigation links -->
+                <RouterLink class="navbar-item" to="/">
+                    Home
                 </RouterLink>
 
-                <RouterLink class="navbar-item " to = "/notifications">
-                    Notifications
+                <RouterLink class="navbar-item" to = "/study">
+                    Study
                 </RouterLink>
 
-                <RouterLink class="navbar-item" to = "/edit-profile">
-                    Edit Profile
-                </RouterLink>
+                            <div class="navbar-item has-dropdown is-hoverable">
+                    <a class="navbar-link">
+                        Menu
+                    </a>
 
-                <!-- admin settings link, visible only to admin users -->
-                <RouterLink class="navbar-item" v-if="currentUser?.role === 'admin'" to = "/admin">
-                    Admin Settings
-                </RouterLink>
+                    <div class="navbar-dropdown">
+                    <RouterLink class="navbar-item" to = "/friends">
+                        Friends
+                    </RouterLink>
+
+                    <RouterLink class="navbar-item " to = "/notifications">
+                        Notifications
+                    </RouterLink>
+
+                    <RouterLink class="navbar-item" to = "/edit-profile">
+                        Edit Profile
+                    </RouterLink>
+
+                    <!-- admin settings link, visible only to admin users -->
+                    <RouterLink class="navbar-item" v-if="session.user.role" to = "/admin">
+                        Admin Settings
+                    </RouterLink>
+                    </div>
                 </div>
-            </div>
             </div>
 
             <div class="navbar-end">
             <div class="navbar-item">
                 <div class="buttons">
                     <!-- sign up button -->
-                    <a  v-if="!currentUser" class="button is-primary">
+                    <a  v-if="!isLoggedIn" class="button is-primary">
                         <strong>Sign up</strong>
                     </a>
                     <!-- log in dropdown menu -->
 
                           <!-- If user is logged in -->
-                        <div v-if="currentUser" class="navbar-item">
-                            <span>Hello, {{ currentUser.username }}</span>
-                            <button class="button navbar-item  is-hoverable is-warning ml-2" @click="logout">
+                        <div v-if= "session.user" class="navbar-item">
+                            <span>Hello, {{ session.user?.username }}</span>
+                            <button class="button navbar-item  is-hoverable is-warning ml-2" @click="handleLogout">
                             Log out
                             </button>
                         </div>
 
 
-                    <div v-if="!currentUser" class="navbar-item is-warning has-dropdown is-hoverable">
+                    <div v-if = "!session.user" class="navbar-item is-warning has-dropdown is-hoverable">
                         <a class="navbar-link">
                             Log in
                         </a>
@@ -106,7 +125,7 @@ const logout = () => {
                         
                         <div class="navbar-dropdown">
                             <a
-                                v-for="user in allUsers"
+                                v-for="user in users"
                                 :key="user.id"
                                 class="navbar-item"
                                 @click="handleUserSelect(user)"

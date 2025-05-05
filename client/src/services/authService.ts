@@ -25,10 +25,15 @@ export const isLoggedIn = () => !!session.value.user
 export const isAdmin = () => session.value.user?.role === 'admin'
 
 export function login(id: number) {
-  return get(id).then((user) => { session.value.user = user })
-}
+  const currentUser = get(id).then((user) => {
+    session.value.user = user
+    sessionStorage.setItem('user', JSON.stringify(user)) })
+    return currentUser;
+  }
+
 
 export function logout() {
   session.value.user = null
   session.value.token = null
+  sessionStorage.removeItem('user')
 }

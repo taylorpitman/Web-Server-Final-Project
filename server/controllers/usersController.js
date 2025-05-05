@@ -56,6 +56,19 @@ exports.getUserSubjects = async (req, res, next) => {
   }
 };
 
+exports.addSubjectToUser = async (req, res, next) => {
+  try {
+    const user = await userModel.addSubjectToUser(req.params.id, req.body);
+    if (!user) {
+      throw new CustomError('User not found', statusCodes.NOT_FOUND);
+    }
+    res.status(statusCodes.OK).json(user);
+  } catch (error) {
+    console.error('Error adding subject to user:', error);
+    next(error);
+  }
+}
+
 //get user friends
 exports.getUserFriends = async (req, res, next) => {
   try {

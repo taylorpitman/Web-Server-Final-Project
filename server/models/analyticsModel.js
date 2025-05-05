@@ -98,6 +98,18 @@ const analyticsModel = {
         if (error) throw new CustomError('Failed to reset streak', statusCodes.BAD_REQUEST);
         return data[0];
     },
+
+    //getStreak(userId) → get current streak count
+    async getStreak(userId) {
+        const { data, error } = await connect()
+        .from(TABLE_NAME)
+        .select('streak_count')
+        .eq('user_id', userId)
+        .single();
+    
+        if (error) throw new CustomError('Failed to fetch streak count', statusCodes.BAD_REQUEST);
+        return data.streak_count;
+    },
 };
 
 module.exports = analyticsModel;

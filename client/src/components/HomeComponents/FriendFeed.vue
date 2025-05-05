@@ -1,23 +1,41 @@
 <script setup lang="ts">
-import { useCurrentUser } from '../../composables/useCurrentUser';
+import { ref, onMounted, computed} from 'vue';
+import { refSession } from '@/services/authService';
+import { getFriendsByUser, type Friend } from '@/services/friendsService'
+import {get} from '@/services/usersService'
 
-// destructure the necessary properties from the useCurrentUser composable
-const { currentUser, friends } = useCurrentUser();
+const session = refSession();
+const friends = ref<Friend[]>([]);
+let currentUser = computed(() => session.value.user)
+
+onMounted(async () => {
+  const user = session.value.user
+  if (user) {
+    try {
+      const response = await getFriendsByUser(user.id)
+      console.log('Friends:', response)
+      friends.value = response
+    } catch (err) {
+      console.error('Failed to load friends:', err)
+    }
+  }
+})
+
 </script>
 
 <template>
-  <div v-if="currentUser">
+  <div v-if = "currentUser">
     <div class="column is-full">
       <div class="box">
         <h2 class="title is-5">👥 Friends</h2>
         <ul>
-          <!-- loop through the friends and display each one -->
           <li v-for="friend in friends" :key="friend.id">
-            <span>🟢 {{ friend.name }} (@{{ friend.username }}) </span>
+            <span>🟢 {{friend.name}} (@{{friend.username }}) </span>
           </li>
         </ul>
-        <!-- button to view all friends -->
-        <button class="button is-link is-light is-fullwidth mt-3">View All Friends</button>
+        <button class="button is-link is-light is-fullwidth mt-3">
+          View All Friends
+        </button>
       </div>
     </div>
   </div>

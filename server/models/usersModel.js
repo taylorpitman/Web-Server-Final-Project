@@ -162,6 +162,15 @@ const userModel = {
     return { success: true };
   },
 
+  async addSubjectToUser(userId, subjectId) {
+    const { data, error } = await connect()
+      .from('subjects')
+      .insert({ user_id: userId, subject_id: subjectId })
+      .select();
+    if (error) throw new CustomError('Failed to add subject to user', statusCodes.BAD_REQUEST);
+    return data[0];
+  },
+
   async searchUsers(term) {
     const { data, error } = await connect()
       .from(TABLE_NAME)

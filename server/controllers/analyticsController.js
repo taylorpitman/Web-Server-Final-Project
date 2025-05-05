@@ -38,6 +38,17 @@ exports.getAnalyticById = async (req, res, next) => {
   }
 };
 
+//get streak
+exports.getStreak = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const streak = await analyticModel.getStreak(userId);
+    res.status(statusCodes.OK).json(streak);
+  } catch (error) {
+    console.error('Get streak error:', error);
+    next(error);
+  }
+};
 // Update an analytic
 exports.updateAnalytics = async (req, res, next) => {
   try {

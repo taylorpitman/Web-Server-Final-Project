@@ -10,6 +10,8 @@ Content-Type: application/json
   "streak_count": 3
 }
 
+### Get streak
+GET http://localhost:8000/api/analytics/3/streak
 ### Get All Analytics
 GET http://localhost:8000/api/analytics/
 

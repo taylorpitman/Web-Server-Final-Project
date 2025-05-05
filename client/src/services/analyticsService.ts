@@ -32,6 +32,10 @@ export function incrementStreak(id: number, date: string): Promise<Analytics> {
   return api(`analytics/${id}/increment-streak`, { date }, 'PATCH')
 }
 
+export function getStreak(id: number): Promise<Analytics> {
+  return api(`analytics/${id}/streak`)
+}
+
 export function resetStreak(id: number, date: string): Promise<Analytics> {
   return api(`analytics/${id}/reset-streak`, { date }, 'PATCH')
 }

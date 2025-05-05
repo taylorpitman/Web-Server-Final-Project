@@ -1,27 +1,71 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { FontAwesomeIcon } from '../../plugins/font-awesome'
-import { useCurrentUser } from '../../composables/useCurrentUser'
+import { ref, onMounted, watch } from 'vue'
+import { refSession } from '@/services/authService'
+import { getByUser, type Subject } from '@/services/subjectsService'
+import { create } from '@/services/subjectsService'
+import { create as createPost } from '@/services/postsService'
 
-// define reactive variables for post content, selected subject, selected mood, and public/private status
+
 const postContent = ref('')
-const selectedSubject = ref('')
+const selectedSubject = ref<Subject | ''>('')
 const selectedMood = ref('')
 const isPublic = ref(true)
 
-// destructure the necessary properties and methods from the useCurrentUser composable
-const { currentUser } = useCurrentUser()
+const session = refSession()
 
-// define available subjects and moods
+const subjects = ref<Subject[]>([])
+
+// watch for + Add New Subject
+watch(selectedSubject, async (newVal) => {
+  if ((newVal as any) === 'newSubject') {
+    const name = window.prompt('Enter a new subject name:')
+    if (name && name.trim() !== '') {
+      const newSubject = await create({ name, user_id: session.value.user!.id })
+      subjects.value = [...subjects.value, newSubject]
+
+      // ✅ set the whole object
+      selectedSubject.value = newSubject
+    } else {
+      selectedSubject.value = ''
+    }
+  }
+})
 
 
-// handle the submission of a new post
-const handlePostSubmit = () => {
+onMounted(async () => {
+  if (session.value.user) {
+    const response = await getByUser(session.value.user.id)
+    subjects.value = response;
+    console.log('subjects.value:', subjects.value)
+  }
+})
+
+
+const handlePostSubmit = async () => {
+  try {
+    const post = {
+      user_id: session.value.user!.id,
+      subject_id: (selectedSubject.value as Subject).id,
+      content: postContent.value,
+      mood_id: 1 // mood is not implemented yet
+    }
+
+    const response = await createPost(post)
+    console.log('Post created:', response)
+
+    // Reset form
+    postContent.value = ''
+    selectedSubject.value = ''
+    // selectedMood.value = ''
+    // isPublic.value = true
+  } catch (error) {
+    console.error('Failed to submit post:', error)
+  }
 }
 </script>
 
 <template>
-  <div class="container mb-4">
+  <div class="container mb-4 post-feed">
     <div class="card">
       <div class="card-content">
         <div class="media">
@@ -51,25 +95,26 @@ const handlePostSubmit = () => {
               <div class="select is-small">
                 <!-- dropdown for selecting subject -->
                 <select v-model="selectedSubject">
-                  <option value="" disabled selected>Subject</option>
-                  <option v-for="subject in subjects" :key="subject" :value="subject">
-                    {{ subject }}
-                  </option>
+                  <option value="" disabled>Subject</option>
+                    <option v-for="subject in subjects" :key="subject.id" :value="subject">
+                      {{ subject.name }}
+                    </option>
+                  <option value="newSubject">+ Add New Subject</option>
                 </select>
               </div>
             </div>
             
-            <div class="level-item mr-2">
+            <!-- <div class="level-item mr-2">
               <div class="select is-small">
-                <!-- dropdown for selecting mood -->
+                 dropdown for selecting mood 
                 <select v-model="selectedMood">
                   <option value="" disabled selected>Mood</option>
-                  <option v-for="mood in moods" :key="mood" :value="mood">
+                   <option v-for="mood in moods" :key="mood" :value="mood">
                     {{ mood }}
-                  </option>
+                  </option> 
                 </select>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
 
@@ -96,10 +141,10 @@ const handlePostSubmit = () => {
             </div>
           </div>
 
-          <div class="level-right">
-            <div class="level-item mr-2">
+           <div class="level-right">
+            <!-- <div class="level-item mr-2">
               <div class="field has-fixed-width">
-                <!-- switch to toggle public/private status -->
+                 switch to toggle public/private status
                 <input 
                   id="publicSwitch" 
                   type="checkbox" 
@@ -108,14 +153,14 @@ const handlePostSubmit = () => {
                 >
                 <label for="publicSwitch">{{ isPublic ? 'Public' : 'Private' }}</label>
               </div>
-            </div>
+            </div> -->
 
             <div class="level-item">
               <!-- button to submit the post -->
               <button 
                 class="button is-primary" 
                 @click="handlePostSubmit"
-                :disabled="!postContent.trim() || !selectedSubject || !selectedMood"
+                :disabled="!postContent.trim() || !selectedSubject "
               >
                 Post
               </button>
@@ -199,4 +244,9 @@ const handlePostSubmit = () => {
   font-size: 1.0rem;
   white-space: nowrap;
 }
+
+.post-feed {
+  min-width: 500px;
+}
+
 </style>
