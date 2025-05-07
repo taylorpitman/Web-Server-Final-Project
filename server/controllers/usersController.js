@@ -142,7 +142,8 @@ exports.getUserAnalytics = async (req, res, next) => {
 // Update a user
 exports.updateUser = async (req, res, next) => {
   try {
-    const updatedUser = await userModel.updateUser(req.params.id, req.body);
+    const id = parseInt( req.params.id);
+    const updatedUser = await userModel.updateUser(id, req.body);
     if (!updatedUser) {
       throw new CustomError('User not found', statusCodes.NOT_FOUND);
     }
@@ -228,5 +229,24 @@ exports.searchUsers = async (req, res, next) => {
     console.error('Error searching users:', error);
     next(error);
   }
+}
+
+exports.buildFeed = async (req, res, next) => {
+  console.log('Received body:', req.body);
+  try {
+    const { user_id, limit = 10, offset = 0 } = req.body;
+
+    if (!user_id) {
+      return res.status(400).json({ message: 'user_id is required' });
+    }
+
+    const feed = await userModel.buildFeed(user_id, limit, offset);
+    res.status(200).json(feed);
+  } catch (error) {
+    console.error('Error building feed:', error);
+    next(error);
+  }
 };
+
+  
 

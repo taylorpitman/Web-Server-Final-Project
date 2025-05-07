@@ -66,6 +66,46 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
+exports.updateLikes = async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id);
+    if (!postId) {
+      throw new CustomError('Post ID is required', statusCodes.BAD_REQUEST);
+    }
+    const { increment } = req.body;
+    const updatedPost = await postModel.updateLikes(postId, increment);
+    if (!updatedPost) {
+      throw new CustomError('Post not found', statusCodes.NOT_FOUND);
+    }
+    res.status(statusCodes.OK).json(updatedPost);
+  } catch (error) {
+    console.error('Update likes error:', error);
+    next(error);
+  }
+}
+
+  exports.getPostSubject = async (req, res, next) => {
+    try {
+      const postId = parseInt(req.params.id);
+      if (!postId) {
+        throw new CustomError('Post ID is required', statusCodes.BAD_REQUEST);
+      }
+      const subject = await postModel.getSubjectPost(postId);
+      if (!subject) {
+        throw new CustomError('Post not found', statusCodes.NOT_FOUND);
+      }
+
+      res.status(statusCodes.OK).json(subject);
+    } catch (error) {
+      console.error('Get post subjects error:', error);
+      next(error);
+    }
+  }
+
+
+
+
+
 
 
 

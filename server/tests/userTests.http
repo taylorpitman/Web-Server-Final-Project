@@ -35,6 +35,17 @@ GET http://localhost:8000/api/users/2/posts
 ### Get user analytics
 GET http://localhost:8000/api/users/2/analytics
 
+### Get Feed
+###
+POST http://localhost:8000/api/users/feed
+Content-Type: application/json
+
+{
+  "user_id": 1,
+  "page": 1,
+  "limit": 10
+}
+
 ### Update a user
 PATCH http://localhost:8000/api/users/2
 Content-Type: application/json

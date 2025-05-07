@@ -41,3 +41,12 @@ Content-Type: application/json
 
 ### Delete Analytics
 DELETE http://localhost:8000/api/analytics/2
+
+### add study time
+PATCH http://localhost:8000/api/analytics/3/add-study-time
+Content-Type: application/json
+
+{
+  "userId": 2,
+  "study_time": 30
+}

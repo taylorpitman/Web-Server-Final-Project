@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {getStreak} from '@/services/analyticsService'
 import { refSession } from '@/services/authService';
-import {onMounted, computed} from 'vue';
+import {onMounted, computed, ref} from 'vue';
+import Timer from './Timer.vue'; // Import the Timer component
 
 // destructure the necessary properties from the useCurrentUser composable
 const session = refSession(); // session object to manage user sessions
 let currentUser = computed(() => session.value.user)
+const showTimer = ref(false);
 
 onMounted(async () => {
   const stored = sessionStorage.getItem('user')
@@ -17,6 +19,15 @@ onMounted(async () => {
     }
   }
 })
+
+const toggleTimer = () => {
+  showTimer.value = !showTimer.value;
+  if (showTimer.value) {
+    // Start the timer
+    console.log('Timer started');
+
+  } 
+}
 
 
 </script>
@@ -35,11 +46,19 @@ onMounted(async () => {
         <!-- user's username -->
         <h3 class="subtitle mb-4 is-6">@{{ currentUser.username }}</h3>
         <!-- user's study streak -->
-        <p>📚 Study streak: <strong>days</strong></p>
+        <p>📚 Study streak: <strong> days</strong></p>
         <!-- user's study goal -->
         <p>🎯 Study goal: <strong>{{currentUser.study_goal}} hours</strong></p>
         <!-- button to start a study session -->
-        <button class="button is-primary is-fullwidth mt-3">Start Study Session</button>
+        <button @click="toggleTimer" class="button is-primary is-fullwidth mt-3">Start/Close Study Timer</button>
+        
+        <div v-if="showTimer" class="notification  mt-3">
+          <div >
+            <div class="">
+              <Timer :user="currentUser"/>
+          </div>
+        </div>
+        </div>
       </div>
     </div>
   </div>

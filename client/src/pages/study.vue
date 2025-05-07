@@ -1,41 +1,64 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useCurrentUser } from '../composables/useCurrentUser'
+import { computed, onMounted, ref } from 'vue'
+import { refSession } from '@/services/authService'
+import { getAnalytics } from '@/services/usersService'
+import { type Analytics } from '@/services/analyticsService';
 
 // destructure the necessary properties from the useCurrentUser composable
-const { currentUser } = useCurrentUser()
+const session = refSession() // session object to manage user sessions
+const currentUser  = session.value.user;
+const analytics = ref<Analytics | null>(null)
 
 // compute the total study time for today
 const studyTimeToday = computed(() => {
-  if (!currentUser.value) return 0
-  return currentUser.value.studyTimeToday
+
 })
 
-// compute the total study time for this week
-const studyTimeThisWeek = computed(() => {
-  if (!currentUser.value) return 0
-  return currentUser.value.studyTimeThisWeek
-})
 
 // compute the total study time for all time
 const studyTimeAllTime = computed(() => {
-  if (!currentUser.value) return 0
-  return currentUser.value.totalStudyTime
+
 })
+
+onMounted (async () => {
+  const userId = session.value.user!.id;
+    if (!userId) throw new Error('User not logged in');
+    const result = await getAnalytics(session.value.user!.id);
+    if (!result) throw new Error('No analytics found for user');
+
+    analytics.value = result;
+
+})
+
 </script>
 
 <template>
-  <div class = "is-flex is-flex-direction-column is-align-items-center p-6">
-    <h1 class="title">Study Statistics</h1>
-    <div v-if="currentUser" class="card p-5 is-warning">
-      <h2 class="subtitle">📚 Study Streak: <strong>{{ currentUser.streak }} days</strong></h2>
-      <h2 class="subtitle">🎯 Study Goal: <strong>{{ currentUser.study_goal / 60 }} hours/day</strong></h2>
-      <h2 class="subtitle">📅 Studied Today: <strong>{{ studyTimeToday / 60 }} hours</strong></h2>
-      <h2 class="subtitle">📅 Studied This Week: <strong>{{ studyTimeThisWeek / 60 }} hours</strong></h2>
-      <h2 class="subtitle">📅 Studied All Time: <strong>{{ studyTimeAllTime / 60 }} hours</strong></h2>
+  <section class="section">
+    <div class="container has-text-centered">
+      <h1 class="title is-3 mb-5">📊 Study Statistics</h1>
+
+      <div v-if="currentUser" class="card has-background-warning-light p-5">
+        <div class="card-content">
+          <div class="content">
+            <h2 class="subtitle is-5 mb-4">
+              📚 <strong>Current Streak:</strong> {{ analytics?.streak_count }} days
+            </h2>
+            <h2 class="subtitle is-5 mb-4">
+              🎯 <strong>Daily Goal:</strong> {{ currentUser.study_goal }} hours/day
+            </h2>
+            <h2 class="subtitle is-5">
+                📅 <strong>Total Time Studied:</strong> {{ ((analytics?.total_minutes || 0) / 60).toFixed(2) }} hours
+            </h2>
+            <h2 class="subtitle is-5">
+              📈 <strong>Study Sessions:</strong> {{ analytics?.session_count }} 
+            </h2>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 </template>
+
 
 <style scoped>
 .box {

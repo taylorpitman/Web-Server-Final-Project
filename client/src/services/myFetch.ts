@@ -19,8 +19,12 @@ export function rest<T>(
       ...headers,
     },
     body: data ? JSON.stringify(data) : undefined,
-  }).then((x) => x.json())
+  }).then(async (res) => {
+    if (res.status === 204) return {} as T; // 👈 fix: don't parse empty response
+    return await res.json();
+  });
 }
+
 
 /*Appends the action to the base URL 
 calls rest() with full URL */

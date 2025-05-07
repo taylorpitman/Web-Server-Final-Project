@@ -13,6 +13,8 @@ router.delete('/:id/subjects/:subjectId', userController.removeSubjectFromUser);
 
 
 router.get('/:id/posts', userController.getUserPosts);
+router.post('/feed', userController.buildFeed);
+
 router.get('/:id/analytics', userController.getUserAnalytics);
 
 router.patch('/:id', userController.updateUser);

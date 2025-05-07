@@ -22,7 +22,7 @@ export function api<T>(
 }
 
 export const isLoggedIn = () => !!session.value.user
-export const isAdmin = () => session.value.user?.role === 'admin'
+export const isAdmin = () => session.value.user?.admin
 
 export function login(id: number) {
   const currentUser = get(id).then((user) => {

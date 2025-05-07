@@ -7,7 +7,6 @@ export interface Analytics {
   user_id: number
   total_minutes: number
   session_count: number
-  average_mood: string
   streak_count: number
   date: string
 }
@@ -38,4 +37,15 @@ export function getStreak(id: number): Promise<Analytics> {
 
 export function resetStreak(id: number, date: string): Promise<Analytics> {
   return api(`analytics/${id}/reset-streak`, { date }, 'PATCH')
+}
+
+export function addStudyTime(id: number, user_id: number, minutes: number): Promise<Analytics> {
+  return api(`analytics/${id}/add-study-time`, { user_id, minutes }, 'PATCH')
+} 
+
+export function updateAnalytics(subjectId: number, userId: number, study_time: number): Promise<Analytics> {
+  return api(`analytics/${subjectId}/add-study-time`, {
+    userId,
+    study_time
+  }, 'PATCH');
 }

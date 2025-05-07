@@ -4,6 +4,8 @@ import { RouterView } from 'vue-router'
 
 import 'bulma/css/bulma.min.css'
 import './assets/custom-bulma.css'
+
+
 </script>
 
 <template>

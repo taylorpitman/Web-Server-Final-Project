@@ -22,7 +22,7 @@ onMounted(async () => {
 
 <template>
   <main class = "container ml-0 mt-5" >
-    <div v-if="currentUser" class = "columns m-0 is-8" >
+    <div v-if="currentUser" class = "columns is-center m-0 is-8" >
       <ProfileFeed />
       <StudyFeed />
       <FriendFeed /> 
@@ -30,7 +30,14 @@ onMounted(async () => {
     <div v-else class="has-text-centered">
       <h1 class="title">Welcome to StudyHive!</h1>
       <p class="subtitle">Please log in to see your personalized feed.</p>
-    </div>
+      <p class="subtitle">Study Bee is an Admin.</p>
+      <p class="subtitle">About The Pomodoro Method:</p>
+<p>
+  The Pomodoro Technique is a time management method that encourages focused work in short, structured intervals. 
+  A typical cycle consists of 25 minutes of deep work followed by a 5-minute break. 
+  After completing four cycles, you take a longer break (15–30 minutes). 
+  This approach helps reduce burnout, improve concentration, and make progress on tasks without distractions.
+</p>    </div>
   </main>
 </template>
 

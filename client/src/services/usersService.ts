@@ -2,6 +2,7 @@
 
 import type { DataListEnvelope } from './dataEnvelope'
 import { api } from './authService'
+import type { Analytics } from './analyticsService'
 
 export interface User {
   id: number
@@ -9,19 +10,18 @@ export interface User {
   email: string,
   study_goal: number,
   is_online: boolean,
-  role?: 'admin' | 'user'
+  admin: boolean,
   created_at?: string
   avatar: string
   name: string
-  streak: number
 }
-export type NewUser = Omit<User, 'id' | 'created_at'>
+export type NewUser = Omit<User, 'id' | 'created_at' | 'is_online' >
 
 
 /******BASIC CRUD******/
 
 export function create(user: NewUser): Promise<User> {
-  return api('users', user, 'POST')
+  return api('users/create', user, 'POST')
 }
 
 export function getAll(): Promise<DataListEnvelope<User>> {
@@ -32,8 +32,8 @@ export function get(id: number): Promise<User> {
   return api(`users/${id}`)
 }
 
-export function update(user: User): Promise<User> {
-  return api(`users/${user.id}`, user, 'PUT')
+export function update(id: number, user: Partial<User>): Promise<User> {
+  return api(`users/${id}`, user, 'PATCH')
 }
 
 export function deleteUser(id: number): Promise<void> {
@@ -77,6 +77,10 @@ export function declineFriendRequest(id: number): Promise<void> {
 
 export function getPosts(id: number): Promise<DataListEnvelope<User>> {
   return api(`users/${id}/posts`)
+}
+
+export function getAnalytics(id: number): Promise<Analytics> {
+  return api<Analytics>(`users/${id}/analytics`)
 }
 
 

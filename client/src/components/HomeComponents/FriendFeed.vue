@@ -33,9 +33,6 @@ onMounted(async () => {
             <span>🟢 {{friend.name}} (@{{friend.username }}) </span>
           </li>
         </ul>
-        <button class="button is-link is-light is-fullwidth mt-3">
-          View All Friends
-        </button>
       </div>
     </div>
   </div>

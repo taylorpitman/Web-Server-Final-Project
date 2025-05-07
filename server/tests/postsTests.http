@@ -14,6 +14,13 @@ GET http://localhost:8000/api/posts
 ### Get a post by ID
 GET http://localhost:8000/api/posts/1
 
+### like post by ID
+PATCH http://localhost:8000/api/posts/3/like
+Content-Type: application/json
+
+{
+  "increment": 1
+}
 ### Update a post by ID
 PUT http://localhost:8000/api/posts/1
 Content-Type: application/json
@@ -26,3 +33,7 @@ Content-Type: application/json
 
 ### Delete a post by ID
 DELETE http://localhost:8000/api/posts/1
+
+
+### get subject by post ID
+GET http://localhost:8000/api/posts/3/subject

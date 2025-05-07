@@ -107,7 +107,9 @@ const userModel = {
     const { data, error } = await connect()
       .from('analytics')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .maybeSingle();
+
     if (error) throw new CustomError('Failed to fetch user analytics', statusCodes.BAD_REQUEST);
     return data;
   },
@@ -178,7 +180,44 @@ const userModel = {
       .ilike('username', `%${term}%`);
     if (error) throw new CustomError('Failed to search users', statusCodes.BAD_REQUEST);
     return data;
+  },
+
+  async buildFeed(userId, limit, offset) {
+    const supabase = connect();
+  
+    const { data: friends, error: friendsError } = await supabase
+      .from('friends')
+      .select('friend_id')
+      .eq('user_id', userId);
+  
+    if (friendsError) {
+      throw new CustomError('Failed to fetch friends', statusCodes.BAD_REQUEST);
+    }
+  
+    const friendIds = friends.map(f => f.friend_id);
+    const allIds = [userId, ...friendIds];
+  
+    const { data, count, error } = await supabase
+      .from('posts')
+      .select(`
+        *,
+        subjects(name),
+        users(name, username)
+      `, { count: 'exact' })
+      .in('user_id', allIds)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1);
+  
+    if (error) {
+      throw new CustomError('Failed to build feed', statusCodes.BAD_REQUEST);
+    }
+  
+    return {
+      items: data,
+      total: count
+    };
   }
+  
 };
 
 module.exports = userModel;

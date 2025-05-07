@@ -4,12 +4,10 @@ import { refSession } from '@/services/authService'
 import { getByUser, type Subject } from '@/services/subjectsService'
 import { create } from '@/services/subjectsService'
 import { create as createPost } from '@/services/postsService'
-
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const postContent = ref('')
 const selectedSubject = ref<Subject | ''>('')
-const selectedMood = ref('')
-const isPublic = ref(true)
 
 const session = refSession()
 
@@ -23,7 +21,6 @@ watch(selectedSubject, async (newVal) => {
       const newSubject = await create({ name, user_id: session.value.user!.id })
       subjects.value = [...subjects.value, newSubject]
 
-      // ✅ set the whole object
       selectedSubject.value = newSubject
     } else {
       selectedSubject.value = ''
@@ -47,7 +44,9 @@ const handlePostSubmit = async () => {
       user_id: session.value.user!.id,
       subject_id: (selectedSubject.value as Subject).id,
       content: postContent.value,
-      mood_id: 1 // mood is not implemented yet
+      mood_id: 1, // mood is not implemented yet
+      likes: 0,
+      dislikes: 0
     }
 
     const response = await createPost(post)
@@ -58,6 +57,7 @@ const handlePostSubmit = async () => {
     selectedSubject.value = ''
     // selectedMood.value = ''
     // isPublic.value = true
+    window.location.reload()
   } catch (error) {
     console.error('Failed to submit post:', error)
   }
@@ -88,10 +88,12 @@ const handlePostSubmit = async () => {
             </div>
           </div>
         </div>
-        
-        <div class="level is-flex is-justify-content-center is-mobile">
+
+        <div class="level">
           <div class="level-left">
-            <div class="level-item mr-2">
+
+            <div class="level-item ml-2">
+              <!-- button to start a timer -->
               <div class="select is-small">
                 <!-- dropdown for selecting subject -->
                 <select v-model="selectedSubject">
@@ -103,58 +105,9 @@ const handlePostSubmit = async () => {
                 </select>
               </div>
             </div>
-            
-            <!-- <div class="level-item mr-2">
-              <div class="select is-small">
-                 dropdown for selecting mood 
-                <select v-model="selectedMood">
-                  <option value="" disabled selected>Mood</option>
-                   <option v-for="mood in moods" :key="mood" :value="mood">
-                    {{ mood }}
-                  </option> 
-                </select>
-              </div>
-            </div> -->
-          </div>
-        </div>
-
-        <div class="level">
-          <div class="level-left">
-            <div class="level-item">
-              <!-- button to add a photo -->
-              <button class="button is-small">
-                <span class="icon">
-                  <FontAwesomeIcon icon="fa-solid fa-image" />
-                </span>
-                <span>Add Photo</span>
-              </button>
-            </div>
-
-            <div class="level-item ml-2">
-              <!-- button to start a timer -->
-              <button class="button is-warning is-small">
-                <span class="icon">
-                  <FontAwesomeIcon icon="fas fa-clock" />
-                </span>
-                <span>Start Timer?</span>
-              </button>
-            </div>
           </div>
 
            <div class="level-right">
-            <!-- <div class="level-item mr-2">
-              <div class="field has-fixed-width">
-                 switch to toggle public/private status
-                <input 
-                  id="publicSwitch" 
-                  type="checkbox" 
-                  class="switch is-rounded is-small"
-                  v-model="isPublic"
-                >
-                <label for="publicSwitch">{{ isPublic ? 'Public' : 'Private' }}</label>
-              </div>
-            </div> -->
-
             <div class="level-item">
               <!-- button to submit the post -->
               <button 

@@ -84,3 +84,15 @@ exports.deleteAnalytics = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.addStudyTime = async (req, res, next) => {
+  try {
+    const subjectId = parseInt(req.params.id);
+    const { userId, study_time } = req.body;
+    const updatedAnalytic = await analyticModel.addStudyTime(subjectId, userId, study_time);
+    res.status(statusCodes.OK).json(updatedAnalytic);
+  } catch (error) {
+    console.error('Add study time error:', error);
+    next(error);
+  }
+};

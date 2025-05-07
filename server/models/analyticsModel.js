@@ -1,4 +1,5 @@
 // models/analyticsModel.js
+const { addStudyTime } = require('../controllers/analyticsController');
 const { CustomError, statusCodes } = require('./errors');
 const { connect } = require('./supabase');
 
@@ -110,6 +111,37 @@ const analyticsModel = {
         if (error) throw new CustomError('Failed to fetch streak count', statusCodes.BAD_REQUEST);
         return data.streak_count;
     },
+
+    async addStudyTime(analyticsId, userId, studyTime) {
+      const { data: existing, error: fetchError } = await connect()
+        .from(TABLE_NAME)
+        .select('total_minutes, session_count')
+        .eq('id', analyticsId)
+        .single();
+    
+      if (fetchError) {
+        throw new CustomError('Failed to fetch current analytics', statusCodes.BAD_REQUEST);
+      }
+    
+      const updatedMinutes = existing.total_minutes + studyTime;
+      const updatedSessions = existing.session_count + 1;
+    
+      const { data, error } = await connect()
+        .from(TABLE_NAME)
+        .update({
+          total_minutes: updatedMinutes,
+          session_count: updatedSessions,
+        })
+        .eq('user_id', userId)
+        .select();
+    
+      if (error) {
+        throw new CustomError('Failed to add study time', statusCodes.BAD_REQUEST);
+      }
+    
+      return data[0];
+    }
+    
 };
 
 module.exports = analyticsModel;

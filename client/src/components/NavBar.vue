@@ -4,10 +4,13 @@ import  { getAll, type User } from '@/services/usersService'
 
 import { isLoggedIn, login, logout, refSession } from '@/services/authService';
 // destructure the necessary properties and methods from the useCurrentUser composable
+import { computed } from 'vue'
+
+const currentUser = computed(() => session.value.user)
 
 const users = ref<User[]>([]); // array to hold all users
 const session = refSession(); // session object to manage user sessions
-
+console.log('Current user:', currentUser); // log the current user
 
 getAll()
   .then((response) => {
@@ -41,6 +44,8 @@ onMounted(async () => {
 
   const response = await getAll()
   users.value = response.items
+
+  console.log("role:" , session.value.user!.admin)
 })
 
 
@@ -79,20 +84,9 @@ onMounted(async () => {
                     </a>
 
                     <div class="navbar-dropdown">
-                    <RouterLink class="navbar-item" to = "/friends">
-                        Friends
-                    </RouterLink>
-
-                    <RouterLink class="navbar-item " to = "/notifications">
-                        Notifications
-                    </RouterLink>
-
-                    <RouterLink class="navbar-item" to = "/edit-profile">
-                        Edit Profile
-                    </RouterLink>
 
                     <!-- admin settings link, visible only to admin users -->
-                    <RouterLink class="navbar-item" v-if="session.user.role" to = "/admin">
+                    <RouterLink class="navbar-item" v-if="currentUser?.admin" to = "/admin">
                         Admin Settings
                     </RouterLink>
                     </div>
@@ -103,9 +97,9 @@ onMounted(async () => {
             <div class="navbar-item">
                 <div class="buttons">
                     <!-- sign up button -->
-                    <a  v-if="!isLoggedIn" class="button is-primary">
+                    <!-- <a  v-if="!isLoggedIn" class="button is-primary">
                         <strong>Sign up</strong>
-                    </a>
+                    </a> -->
                     <!-- log in dropdown menu -->
 
                           <!-- If user is logged in -->
