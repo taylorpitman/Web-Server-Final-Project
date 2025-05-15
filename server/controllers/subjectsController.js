@@ -1,4 +1,3 @@
-
 const subjectModel = require('../models/subjectsModel');
 const { CustomError, statusCodes } = require('../models/errors');
 
@@ -57,6 +56,18 @@ exports.deleteSubject = async (req, res, next) => {
     res.status(statusCodes.OK).json(subject);
   } catch (error) {
     console.error('Error deleting subject:', error);
+    next(error);
+  }
+};
+
+//Search subjects
+exports.searchSubjects = async (req, res, next) => {
+  try {
+    const { id, query } = req.params;
+    const subjects = await subjectModel.searchSubjects(query, id);
+    res.status(statusCodes.OK).json(subjects);
+  } catch (error) {
+    console.error('Error searching subjects:', error);
     next(error);
   }
 };

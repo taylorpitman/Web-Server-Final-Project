@@ -55,6 +55,17 @@ const subjectModel = {
         return data;
     },
 
+  // searchSubjects(searchTerm) → optional, to search for subjects by name
+    async searchSubjects(searchTerm, user_id) {
+        const { data, error } = await connect()
+            .from(TABLE_NAME)
+            .select('*')
+            .ilike('name', `%${searchTerm}%`)
+            .eq('user_id', user_id);
+        if (error) 
+            throw new CustomError('Failed to search subjects', statusCodes.BAD_REQUEST);
+        return data;
+    },
 
 };
 

@@ -4,14 +4,19 @@ import { refSession } from '@/services/authService'
 import { getByUser, type Subject } from '@/services/subjectsService'
 import { create } from '@/services/subjectsService'
 import { create as createPost } from '@/services/postsService'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
+import { getSubjectsMatching } from '@/services/subjectsService'; // You'll define this
+
+const inputValue = ref(''); 
 const postContent = ref('')
-const selectedSubject = ref<Subject | ''>('')
-
+const selectedSubject = ref<Subject | null>(null)
 const session = refSession()
-
 const subjects = ref<Subject[]>([])
+
+const options = ref<{
+    value: Subject;
+    label: string;
+}[]>([]);
 
 // watch for + Add New Subject
 watch(selectedSubject, async (newVal) => {
@@ -23,19 +28,43 @@ watch(selectedSubject, async (newVal) => {
 
       selectedSubject.value = newSubject
     } else {
-      selectedSubject.value = ''
+      selectedSubject.value!.name = ''
     }
   }
 })
 
-
-onMounted(async () => {
-  if (session.value.user) {
-    const response = await getByUser(session.value.user.id)
-    subjects.value = response;
-    console.log('subjects.value:', subjects.value)
-  }
+watch(inputValue, (newVal) => {
+  console.log('inputValue changed:', newVal)
 })
+
+watch(subjects, () => {
+  console.log('Subjects loaded:', subjects.value.map(s => s.name))
+})
+
+
+async function onType(name: string) {
+
+  try {
+    const results = await getSubjectsMatching(name, session.value.user!.id);
+    options.value = results.map((subject: Subject) => ({
+      value: subject,
+      label: subject.name
+    }));
+
+
+  } catch (err) {
+    console.error('Error fetching subjects:', err);
+    subjects.value = [];
+  }
+}
+
+// onMounted(async () => {
+//   if (session.value.user) {
+//     const response = await getByUser(session.value.user.id)
+//     subjects.value = response;
+//     console.log('subjects.value:', subjects.value)
+//   }
+// })
 
 
 const handlePostSubmit = async () => {
@@ -54,7 +83,7 @@ const handlePostSubmit = async () => {
 
     // Reset form
     postContent.value = ''
-    selectedSubject.value = ''
+    selectedSubject.value!.name = ''
     // selectedMood.value = ''
     // isPublic.value = true
     window.location.reload()
@@ -91,19 +120,30 @@ const handlePostSubmit = async () => {
 
         <div class="level">
           <div class="level-left">
+            <div class="level-item ">
+              <button class=" mr-5 is-warning button" value="newSubject">Add Subject</button>
+              <div class="container">
+                <o-field label="Subject">
+                  <o-autocomplete
+                    v-model="selectedSubject"
+                    :input="inputValue"
+                    :options="options"
 
-            <div class="level-item ml-2">
-              <!-- button to start a timer -->
-              <div class="select is-small">
-                <!-- dropdown for selecting subject -->
-                <select v-model="selectedSubject">
-                  <option value="" disabled>Subject</option>
-                    <option v-for="subject in subjects" :key="subject.id" :value="subject">
-                      {{ subject.name }}
-                    </option>
-                  <option value="newSubject">+ Add New Subject</option>
-                </select>
-              </div>
+                    @input="onType"
+                    backend-filtering
+                    :debounce="500"
+                    clearable         
+                    placeholder="e.g Web Development"
+                    icon="search"
+                    open-on-focus
+                  />
+                </o-field>
+
+                <div v-if="selectedSubject" class="box is-primary has-text-centered">
+                  Subject: <strong>{{ selectedSubject.name }}</strong>
+                  <button class="delete is-small mx-2" @click="selectedSubject === null"></button>
+                </div> 
+
             </div>
           </div>
 
@@ -122,6 +162,7 @@ const handlePostSubmit = async () => {
         </div>
       </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -173,6 +214,12 @@ const handlePostSubmit = async () => {
   left: 0.125em;
   transition: transform 0.3s ease;
   will-change: transform;
+}
+
+.o-autocomplete__menu {
+  z-index: 9999;
+  background: white;
+  position: absolute;
 }
 
 .switch[type="checkbox"]:checked {

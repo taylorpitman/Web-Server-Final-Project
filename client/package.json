@@ -17,6 +17,8 @@
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@oruga-ui/oruga-next": "^0.10.5",
+    "@oruga-ui/theme-bulma": "^0.6.2",
     "@supabase/supabase-js": "^2.49.4",
     "@vueuse/core": "^12.8.2",
     "buefy": "npm:@ntohq/buefy-next@^0.2.0",

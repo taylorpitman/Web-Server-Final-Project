@@ -32,3 +32,7 @@ export function remove(id: number): Promise<void> {
 export function getByUser(userId: number): Promise<Subject[]> {
   return api(`users/${userId}/subjects`)
 }
+
+export function getSubjectsMatching(query: string, userId: number) : Promise<Subject[]> {
+  return api(`subjects/search/${userId}/${query}`)
+}
